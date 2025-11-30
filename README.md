@@ -1,0 +1,158 @@
+# AI LaTeX Book Generator v2.0
+
+An AI-powered system for automatically generating university-level LaTeX textbooks with interactive outline editing and customizable LaTeX headers.
+
+## 🚀 Features
+
+- **Interactive Outline Editor**: Drag-and-drop interface for managing chapter hierarchy
+- **Custom LaTeX Headers**: Full control over LaTeX preamble and custom commands
+- **AI Content Generation**: Multi-role AI collaboration using Claude and OpenAI APIs
+- **Enhanced Exercise Format**: Support for `\ex{}` and `\sol{}` commands
+- **Real-time Collaboration**: WebSocket-based live updates
+- **Cloudflare Full-Stack**: Deployed on Cloudflare Pages and Workers
+
+## 📋 Tech Stack
+
+### Frontend
+- React 18 + TypeScript
+- Zustand (State Management)
+- Tailwind CSS + Headless UI
+- @dnd-kit/core (Drag & Drop)
+- Socket.io-client (Real-time)
+- Vite (Build Tool)
+
+### Backend
+- Node.js + Express
+- Cloudflare Workers
+- Cloudflare D1 (Database)
+- Cloudflare R2 (Storage)
+- Bull Queue (Task Queue)
+- Socket.io (WebSocket)
+
+## 🛠️ Installation
+
+### Prerequisites
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+- Wrangler CLI (Cloudflare)
+
+### Setup
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd latex-book-generator
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Configure environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your API keys
+```
+
+4. Initialize database:
+```bash
+npm run db:migrate
+```
+
+## 🏃 Development
+
+Start both frontend and backend:
+```bash
+npm run dev
+```
+
+Or start individually:
+```bash
+npm run dev:frontend  # Frontend on http://localhost:5173
+npm run dev:backend   # Backend on http://localhost:8787
+```
+
+## 📦 Build
+
+Build all packages:
+```bash
+npm run build
+```
+
+## 🚀 Deployment
+
+Deploy to Cloudflare:
+```bash
+npm run deploy
+```
+
+This will:
+1. Build frontend and backend
+2. Deploy frontend to Cloudflare Pages
+3. Deploy backend to Cloudflare Workers
+4. Run database migrations
+
+## 📂 Project Structure
+
+```
+latex-book-generator/
+├── frontend/              # React frontend
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   ├── stores/       # Zustand stores
+│   │   ├── types/        # TypeScript types
+│   │   └── utils/        # Utilities
+│   └── package.json
+├── backend/              # Node.js backend
+│   ├── src/
+│   │   ├── routes/       # API routes
+│   │   ├── services/     # Business logic
+│   │   ├── models/       # Database models
+│   │   └── workers/      # Cloudflare Workers
+│   └── package.json
+├── migrations/           # Database migrations
+├── scripts/             # Deployment scripts
+└── package.json
+```
+
+## 🔧 Configuration
+
+### Cloudflare Workers
+
+Configure in `backend/wrangler.toml`:
+- D1 Database binding
+- R2 Bucket binding
+- Environment variables
+
+### Cloudflare Pages
+
+Configure in `frontend/wrangler.toml`:
+- Build command
+- Output directory
+- Environment variables
+
+## 📖 Usage
+
+1. **Create a Project**: Start with a title and optional LaTeX header
+2. **Edit Outline**: Use drag-and-drop to organize chapters, sections, and subsections
+3. **Customize LaTeX**: Add custom commands and packages in the header editor
+4. **Generate Content**: AI generates content based on your outline
+5. **Review & Export**: Download the complete LaTeX source or compiled PDF
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our contributing guidelines.
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
+## 🐛 Known Issues
+
+- LaTeX compilation requires TeX Live installation
+- Real-time collaboration limited to 100 concurrent users per project
+
+## 📞 Support
+
+For issues and questions, please open a GitHub issue.
