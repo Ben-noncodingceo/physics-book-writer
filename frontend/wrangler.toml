@@ -1,0 +1,9 @@
+# Cloudflare Pages Configuration for Frontend
+name = "physics-book-writer"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "physics-book-writer"
+
+[env.preview]
+name = "physics-book-writer-preview"

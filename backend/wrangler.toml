@@ -1,4 +1,4 @@
-name = "latex-book-generator"
+name = "physicsbookwriter"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 node_compat = true
@@ -6,13 +6,13 @@ node_compat = true
 # D1 Database
 [[d1_databases]]
 binding = "DB"
-database_name = "latex-book-db"
-database_id = "" # Fill this in after creating the database
+database_name = "physics-book-writer-d1"
+database_id = "0a09cf11-829c-46e8-8fde-b9946c73f1e7"
 
 # R2 Storage
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "latex-files"
+bucket_name = "physics-book-writer"
 
 # Environment Variables (for development)
 [vars]
@@ -26,14 +26,14 @@ RATE_LIMIT_MAX_REQUESTS = "100"
 
 # Production environment
 [env.production]
-name = "latex-book-generator-prod"
+name = "physicsbookwriter-prod"
 vars = { NODE_ENV = "production" }
 
 [[env.production.d1_databases]]
 binding = "DB"
-database_name = "latex-book-db-prod"
-database_id = "" # Fill this in after creating the production database
+database_name = "physics-book-writer-d1"
+database_id = "0a09cf11-829c-46e8-8fde-b9946c73f1e7"
 
 [[env.production.r2_buckets]]
 binding = "BUCKET"
-bucket_name = "latex-files-prod"
+bucket_name = "physics-book-writer"
