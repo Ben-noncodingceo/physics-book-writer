@@ -79,7 +79,7 @@ export class AIService {
       throw new Error(`Gemini API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as any;
     const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const exercises = this.extractExercises(content);
 
@@ -117,7 +117,7 @@ export class AIService {
       throw new Error(`Tongyi API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as any;
     const content = data.output?.text || '';
     const exercises = this.extractExercises(content);
 
