@@ -22,21 +22,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Install root dependencies
-        run: npm ci
+        run: npm install
 
       - name: Type check backend
         run: |
           cd backend
-          npm ci
+          npm install
           npm run type-check
 
       - name: Type check frontend
         run: |
           cd frontend
-          npm ci
+          npm install
           npm run type-check
 
   build:
@@ -51,18 +50,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Build backend
         run: |
           cd backend
-          npm ci
+          npm install
           npm run build
 
       - name: Build frontend
         run: |
           cd frontend
-          npm ci
+          npm install
           npm run build
         env:
           VITE_API_URL: https://physicsbookwriter.workers.dev/api
