@@ -3,7 +3,8 @@
 export interface Env {
   DB: D1Database;
   BUCKET: R2Bucket;
-  CLAUDE_API_KEY: string;
+  GEMINI_API_KEY: string;
+  TONGYI_API_KEY: string;
   OPENAI_API_KEY: string;
   NODE_ENV: string;
   RATE_LIMIT_WINDOW_MS: string;
