@@ -35,19 +35,38 @@ An AI-powered system for automatically generating university-level LaTeX textboo
 - Node.js >= 18.0.0
 - npm >= 9.0.0
 - Wrangler CLI (Cloudflare)
+- Claude API Key and/or OpenAI API Key
 
-### Setup
+### Quick Setup
 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd latex-book-generator
+cd physics-book-writer
 ```
 
 2. Install dependencies:
 ```bash
 npm install
 ```
+
+3. Run the automated setup script:
+```bash
+./scripts/setup-cloudflare.sh
+```
+
+This script will:
+- Verify Wrangler CLI installation
+- Run database migrations
+- Set up API secrets
+- Optionally deploy to Cloudflare
+
+### Manual Setup
+
+For detailed manual setup instructions, see:
+- 📖 [Quick Start Guide](docs/QUICKSTART.md)
+- 🚀 [GitHub Auto-Deploy Setup](docs/GITHUB_SETUP.md)
+- 🔧 [Deployment Guide](docs/DEPLOYMENT.md)
 
 3. Configure environment variables:
 ```bash
@@ -82,16 +101,51 @@ npm run build
 
 ## 🚀 Deployment
 
-Deploy to Cloudflare:
+### Automated Deployment (GitHub Actions)
+
+This project is configured for automatic deployment to Cloudflare via GitHub Actions.
+
+**Setup Steps:**
+
+1. Set GitHub Secrets (required):
+   - `CLOUDFLARE_API_TOKEN` - Your Cloudflare API Token
+   - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare Account ID
+
+2. Push to main branch or any `claude/**` branch:
+   ```bash
+   git push origin main
+   ```
+
+3. GitHub Actions will automatically:
+   - Build and test the code
+   - Deploy backend to Cloudflare Workers
+   - Deploy frontend to Cloudflare Pages
+   - Run database migrations (main branch only)
+
+📖 **Detailed Instructions**: See [GitHub Setup Guide](docs/GITHUB_SETUP.md)
+
+### Manual Deployment
+
 ```bash
+# One-time setup
+./scripts/setup-cloudflare.sh
+
+# Deploy manually
 npm run deploy
 ```
 
-This will:
-1. Build frontend and backend
-2. Deploy frontend to Cloudflare Pages
-3. Deploy backend to Cloudflare Workers
-4. Run database migrations
+### Current Cloudflare Configuration
+
+- **Worker**: `physicsbookwriter`
+- **D1 Database**: `physics-book-writer-d1`
+- **R2 Storage**: `physics-book-writer`
+- **Pages Project**: `physics-book-writer`
+
+### Deployment URLs
+
+After deployment, your application will be available at:
+- **Frontend**: https://physics-book-writer.pages.dev
+- **Backend API**: https://physicsbookwriter.workers.dev/api
 
 ## 📂 Project Structure
 
