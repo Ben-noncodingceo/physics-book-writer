@@ -77,8 +77,8 @@ jobs:
           cd frontend
           npm run build
         env:
-          VITE_API_URL: https://physicsbookwriter.workers.dev/api
-          VITE_WS_URL: wss://physicsbookwriter.workers.dev
+          VITE_API_URL: https://physicsbookwriter.peungsun.workers.dev/api
+          VITE_WS_URL: wss://physicsbookwriter.peungsun.workers.dev
 
       - name: Verify build artifacts
         run: |
