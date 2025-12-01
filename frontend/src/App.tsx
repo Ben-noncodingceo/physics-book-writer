@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { OutlineEditor } from './components/OutlineEditor';
 import { LatexHeaderEditor } from './components/LatexHeaderEditor';
 import { ProjectHeader } from './components/ProjectHeader';

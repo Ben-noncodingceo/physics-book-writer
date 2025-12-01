@@ -47,11 +47,11 @@ class SocketService {
   }
 
   on<K extends keyof SocketEvents>(event: K, handler: SocketEvents[K]) {
-    this.socket?.on(event, handler);
+    this.socket?.on(event as any, handler as any);
   }
 
   off<K extends keyof SocketEvents>(event: K, handler?: SocketEvents[K]) {
-    this.socket?.off(event, handler);
+    this.socket?.off(event as any, handler as any);
   }
 
   getSocket() {
