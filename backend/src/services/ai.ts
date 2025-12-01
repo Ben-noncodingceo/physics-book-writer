@@ -1,18 +1,28 @@
-import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import type { Env, Outline, GenerationContext, AIResponse, Exercise } from '../types';
 
 export class AIService {
-  private claude: Anthropic;
-  private openai: OpenAI;
+  private openai: OpenAI | null = null;
+  private geminiApiKey: string | null = null;
+  private tongyiApiKey: string | null = null;
 
   constructor(env: Env) {
-    this.claude = new Anthropic({
-      apiKey: env.CLAUDE_API_KEY,
-    });
-    this.openai = new OpenAI({
-      apiKey: env.OPENAI_API_KEY,
-    });
+    // 初始化 OpenAI
+    if (env.OPENAI_API_KEY) {
+      this.openai = new OpenAI({
+        apiKey: env.OPENAI_API_KEY,
+      });
+    }
+
+    // 保存 Gemini API Key
+    if (env.GEMINI_API_KEY) {
+      this.geminiApiKey = env.GEMINI_API_KEY;
+    }
+
+    // 保存通义千问 API Key
+    if (env.TONGYI_API_KEY) {
+      this.tongyiApiKey = env.TONGYI_API_KEY;
+    }
   }
 
   async generateChapterContent(
@@ -21,31 +31,140 @@ export class AIService {
   ): Promise<AIResponse> {
     const prompt = this.buildPrompt(outline, context);
 
+    // 优先级：Gemini > 通义千问 > OpenAI
     try {
-      const message = await this.claude.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 4096,
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-      });
-
-      const content = message.content[0].type === 'text' ? message.content[0].text : '';
-
-      // Extract exercises if present
-      const exercises = this.extractExercises(content);
-
-      return {
-        content,
-        exercises,
-      };
+      if (this.geminiApiKey) {
+        return await this.generateWithGemini(prompt);
+      } else if (this.tongyiApiKey) {
+        return await this.generateWithTongyi(prompt);
+      } else if (this.openai) {
+        return await this.generateWithOpenAI(prompt);
+      } else {
+        throw new Error('No AI API key configured');
+      }
     } catch (error) {
-      console.error('Claude API error:', error);
-      throw new Error('Failed to generate content with Claude API');
+      console.error('AI generation error:', error);
+      // 如果主要的失败了，尝试备用的
+      return await this.generateWithFallback(prompt);
     }
+  }
+
+  private async generateWithGemini(prompt: string): Promise<AIResponse> {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.geminiApiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 4096,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const exercises = this.extractExercises(content);
+
+    return { content, exercises };
+  }
+
+  private async generateWithTongyi(prompt: string): Promise<AIResponse> {
+    const response = await fetch(
+      'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.tongyiApiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'qwen-max',
+          input: {
+            messages: [
+              {
+                role: 'user',
+                content: prompt,
+              },
+            ],
+          },
+          parameters: {
+            max_tokens: 4096,
+            temperature: 0.7,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Tongyi API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const content = data.output?.text || '';
+    const exercises = this.extractExercises(content);
+
+    return { content, exercises };
+  }
+
+  private async generateWithOpenAI(prompt: string): Promise<AIResponse> {
+    if (!this.openai) {
+      throw new Error('OpenAI not configured');
+    }
+
+    const completion = await this.openai.chat.completions.create({
+      model: 'gpt-4-turbo-preview',
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      max_tokens: 4096,
+      temperature: 0.7,
+    });
+
+    const content = completion.choices[0]?.message?.content || '';
+    const exercises = this.extractExercises(content);
+
+    return { content, exercises };
+  }
+
+  private async generateWithFallback(prompt: string): Promise<AIResponse> {
+    // 尝试所有可用的 API
+    const apis = [];
+
+    if (this.tongyiApiKey) apis.push(() => this.generateWithTongyi(prompt));
+    if (this.openai) apis.push(() => this.generateWithOpenAI(prompt));
+    if (this.geminiApiKey) apis.push(() => this.generateWithGemini(prompt));
+
+    for (const api of apis) {
+      try {
+        return await api();
+      } catch (error) {
+        console.error('Fallback attempt failed:', error);
+        continue;
+      }
+    }
+
+    throw new Error('All AI APIs failed');
   }
 
   private buildPrompt(outline: Outline, context: GenerationContext): string {
@@ -121,18 +240,23 @@ export class AIService {
 
   async researchTopic(topic: string): Promise<string> {
     try {
-      const message = await this.claude.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 2048,
-        messages: [
-          {
-            role: 'user',
-            content: `请简要介绍物理学概念"${topic}"，包括基本定义、重要性和关键应用。限制在300字以内。`,
-          },
-        ],
-      });
-
-      return message.content[0].type === 'text' ? message.content[0].text : '';
+      if (this.geminiApiKey) {
+        const response = await this.generateWithGemini(
+          `请简要介绍物理学概念"${topic}"，包括基本定义、重要性和关键应用。限制在300字以内。`
+        );
+        return response.content;
+      } else if (this.tongyiApiKey) {
+        const response = await this.generateWithTongyi(
+          `请简要介绍物理学概念"${topic}"，包括基本定义、重要性和关键应用。限制在300字以内。`
+        );
+        return response.content;
+      } else if (this.openai) {
+        const response = await this.generateWithOpenAI(
+          `请简要介绍物理学概念"${topic}"，包括基本定义、重要性和关键应用。限制在300字以内。`
+        );
+        return response.content;
+      }
+      return '';
     } catch (error) {
       console.error('Research error:', error);
       return '';
