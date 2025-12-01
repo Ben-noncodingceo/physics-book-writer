@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useProjectStore } from '@/stores/projectStore';
 import { latexApi } from '@/services/api';
 
 interface LatexHeaderEditorProps {
