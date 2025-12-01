@@ -10,12 +10,18 @@ import { projectApi } from './services/api';
 
 function App() {
   const [showLatexEditor, setShowLatexEditor] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { currentProject, setCurrentProject } = useProjectStore();
   const { notifications, removeNotification } = useUIStore();
 
   useEffect(() => {
-    // Initialize socket connection
-    socketService.connect();
+    // Initialize socket connection (optional, won't block)
+    try {
+      socketService.connect();
+    } catch (err) {
+      console.warn('Socket connection failed:', err);
+    }
 
     // Load or create a default project for demo
     loadOrCreateProject();
@@ -27,6 +33,8 @@ function App() {
 
   const loadOrCreateProject = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const projects = await projectApi.list();
       if (projects.length > 0) {
         setCurrentProject(projects[0]);
@@ -43,15 +51,43 @@ function App() {
         });
         setCurrentProject(newProject);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load project:', error);
+      setError(error?.message || '无法连接到服务器。请检查后端服务是否正常运行。');
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg text-gray-500">加载中...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="max-w-md p-6 bg-red-50 border border-red-200 rounded-lg">
+          <h2 className="text-xl font-bold text-red-800 mb-2">连接错误</h2>
+          <p className="text-red-700 mb-4">{error}</p>
+          <button
+            onClick={() => loadOrCreateProject()}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            重试
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentProject) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg text-gray-500">加载中...</div>
+        <div className="text-lg text-gray-500">未找到项目</div>
       </div>
     );
   }
