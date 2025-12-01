@@ -78,6 +78,7 @@ jobs:
           npm run build
         env:
           VITE_API_URL: https://physicsbookwriter.workers.dev/api
+          VITE_WS_URL: wss://physicsbookwriter.workers.dev
 
       - name: Verify build artifacts
         run: |
