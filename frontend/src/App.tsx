@@ -3,6 +3,7 @@ import { OutlineEditor } from './components/OutlineEditor';
 import { LatexHeaderEditor } from './components/LatexHeaderEditor';
 import { ProjectHeader } from './components/ProjectHeader';
 import { GenerationPanel } from './components/GenerationPanel';
+import { TaskLogViewer } from './components/TaskLogViewer';
 import { useProjectStore } from './stores/projectStore';
 import { useUIStore } from './stores/uiStore';
 // import { socketService } from './services/socket'; // Disabled until backend WebSocket support
@@ -102,7 +103,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <ProjectHeader
         project={currentProject}
@@ -111,16 +112,17 @@ function App() {
       />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left: Outline Editor */}
           <div className="lg:col-span-2">
             <OutlineEditor projectId={currentProject.id} />
           </div>
 
-          {/* Right: Generation Panel */}
-          <div className="lg:col-span-1">
+          {/* Right: Generation Panel and Task Logs */}
+          <div className="lg:col-span-1 space-y-6">
             <GenerationPanel projectId={currentProject.id} />
+            <TaskLogViewer projectId={currentProject.id} />
           </div>
         </div>
       </div>
@@ -213,6 +215,39 @@ function App() {
                   <option value="en">English</option>
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  AI 提供商
+                </label>
+                <select
+                  value={currentProject.config?.aiProvider || 'gemini'}
+                  onChange={(e) => updateProject({
+                    config: { ...currentProject.config, aiProvider: e.target.value as 'gemini' | 'tongyi' | 'openai' }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="gemini">Gemini (Google)</option>
+                  <option value="tongyi">通义千问 (阿里云)</option>
+                  <option value="openai">OpenAI (GPT-4)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  AI 模型
+                </label>
+                <input
+                  type="text"
+                  value={currentProject.config?.aiModel || ''}
+                  onChange={(e) => updateProject({
+                    config: { ...currentProject.config, aiModel: e.target.value }
+                  })}
+                  placeholder="例如: gemini-pro, qwen-max, gpt-4-turbo"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="mt-1 text-sm text-gray-500">留空使用默认模型</p>
+              </div>
             </div>
 
             <div className="mt-6 flex justify-end gap-2">
@@ -270,6 +305,15 @@ function App() {
           </div>
         ))}
       </div>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-auto">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="text-center text-sm text-gray-600">
+            联系作者: <a href="mailto:sunpeng@eduzhixin.com" className="text-blue-600 hover:text-blue-800">sunpeng@eduzhixin.com</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

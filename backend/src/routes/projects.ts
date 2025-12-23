@@ -51,7 +51,13 @@ projects.put('/:id', async (c) => {
     return c.json({ error: 'Project not found' }, 404);
   }
 
-  await db.updateProject(id, body);
+  // Serialize config if it's an object
+  const updates: any = { ...body };
+  if (updates.config && typeof updates.config === 'object') {
+    updates.config = JSON.stringify(updates.config);
+  }
+
+  await db.updateProject(id, updates);
   const updated = await db.getProject(id);
 
   return c.json(updated);
@@ -188,6 +194,22 @@ projects.put('/:id/latex-header', async (c) => {
   await db.updateProject(id, { latex_header: content });
 
   return c.json({ message: 'LaTeX header updated successfully' });
+});
+
+// Get task logs for a project
+projects.get('/:id/logs', async (c) => {
+  const id = c.req.param('id');
+  const limit = parseInt(c.req.query('limit') || '100');
+  const db = new Database(c.env.DB);
+
+  const project = await db.getProject(id);
+  if (!project) {
+    return c.json({ error: 'Project not found' }, 404);
+  }
+
+  const logs = await db.getTaskLogs(id, limit);
+
+  return c.json(logs);
 });
 
 export default projects;
