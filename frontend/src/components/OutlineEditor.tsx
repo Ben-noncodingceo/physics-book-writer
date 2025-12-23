@@ -207,7 +207,7 @@ export const OutlineEditor: React.FC<OutlineEditorProps> = ({ projectId }) => {
       const created = await outlineApi.create(projectId, {
         title: item.title,
         level: item.level,
-        parentId,
+        parentId: parentId || undefined,
         sortOrder: startOrder + i,
       });
 
