@@ -5,7 +5,7 @@ import { ProjectHeader } from './components/ProjectHeader';
 import { GenerationPanel } from './components/GenerationPanel';
 import { useProjectStore } from './stores/projectStore';
 import { useUIStore } from './stores/uiStore';
-import { socketService } from './services/socket';
+// import { socketService } from './services/socket'; // Disabled until backend WebSocket support
 import { projectApi } from './services/api';
 
 function App() {
