@@ -132,7 +132,13 @@ export function TaskLogViewer({ projectId }: TaskLogViewerProps) {
                     详细信息
                   </summary>
                   <pre className="mt-1 text-xs text-gray-600 bg-gray-50 p-2 rounded overflow-x-auto">
-                    {JSON.stringify(JSON.parse(log.metadata), null, 2)}
+                    {(() => {
+                      try {
+                        return JSON.stringify(JSON.parse(log.metadata as string), null, 2);
+                      } catch {
+                        return log.metadata;
+                      }
+                    })()}
                   </pre>
                 </details>
               )}

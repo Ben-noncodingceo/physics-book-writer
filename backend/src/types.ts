@@ -77,7 +77,7 @@ export interface Exercise {
 export interface GenerationContext {
   outline: Outline[];
   latexHeader: string;
-  difficulty: 'undergraduate' | 'graduate';
+  difficulty: 'high-school' | 'undergraduate' | 'graduate';
   writingStyle: string;
   customCommands: string[];
 }
