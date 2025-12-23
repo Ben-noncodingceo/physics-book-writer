@@ -134,7 +134,8 @@ export function TaskLogViewer({ projectId }: TaskLogViewerProps) {
                   <pre className="mt-1 text-xs text-gray-600 bg-gray-50 p-2 rounded overflow-x-auto">
                     {(() => {
                       try {
-                        const parsed = JSON.parse(log.metadata);
+                        const metadataStr = log.metadata as string;
+                        const parsed = JSON.parse(metadataStr);
                         return JSON.stringify(parsed, null, 2);
                       } catch {
                         return String(log.metadata);
