@@ -4,6 +4,7 @@ import { LatexHeaderEditor } from './components/LatexHeaderEditor';
 import { ProjectHeader } from './components/ProjectHeader';
 import { GenerationPanel } from './components/GenerationPanel';
 import { TaskLogViewer } from './components/TaskLogViewer';
+import { AISettings } from './components/AISettings';
 import { useProjectStore } from './stores/projectStore';
 import { useUIStore } from './stores/uiStore';
 // import { socketService } from './services/socket'; // Disabled until backend WebSocket support
@@ -141,8 +142,8 @@ function App() {
 
       {/* Settings Modal */}
       {showSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-4xl w-full p-6 my-8 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">项目设置</h2>
               <button
@@ -216,37 +217,14 @@ function App() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  AI 提供商
-                </label>
-                <select
-                  value={currentProject.config?.aiProvider || 'gemini'}
-                  onChange={(e) => updateProject({
-                    config: { ...currentProject.config, aiProvider: e.target.value as 'gemini' | 'tongyi' | 'openai' }
+              <div className="border-t border-gray-200 pt-4 mt-4">
+                <AISettings
+                  projectId={currentProject.id}
+                  aiConfig={currentProject.config?.aiConfig}
+                  onChange={(aiConfig) => updateProject({
+                    config: { ...currentProject.config, aiConfig }
                   })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="gemini">Gemini (Google)</option>
-                  <option value="tongyi">通义千问 (阿里云)</option>
-                  <option value="openai">OpenAI (GPT-4)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  AI 模型
-                </label>
-                <input
-                  type="text"
-                  value={currentProject.config?.aiModel || ''}
-                  onChange={(e) => updateProject({
-                    config: { ...currentProject.config, aiModel: e.target.value }
-                  })}
-                  placeholder="例如: gemini-pro, qwen-max, gpt-4-turbo"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <p className="mt-1 text-sm text-gray-500">留空使用默认模型</p>
               </div>
             </div>
 

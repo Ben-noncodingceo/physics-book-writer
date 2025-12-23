@@ -144,7 +144,14 @@ generation.get('/projects/:id/export/latex', async (c) => {
 
 // Export PDF (requires LaTeX compilation - placeholder)
 generation.get('/projects/:id/export/pdf', async (c) => {
-  return c.json({ error: 'PDF export not yet implemented' }, 501);
+  return c.json({
+    error: 'PDF 导出需要 LaTeX 编译器',
+    message: '请先下载 TEX 文件，然后使用以下方法之一编译为 PDF：\n' +
+      '1. 使用本地 LaTeX 编译器（pdflatex、xelatex 或 lualatex）\n' +
+      '2. 使用在线 LaTeX 编辑器（如 Overleaf.com）\n' +
+      '3. 使用 LaTeX Workshop（VS Code 扩展）',
+    recommendation: '推荐使用 xelatex 或 lualatex 以获得更好的中文支持'
+  }, 501);
 });
 
 export default generation;

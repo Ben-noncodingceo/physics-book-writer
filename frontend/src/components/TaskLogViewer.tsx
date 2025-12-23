@@ -114,13 +114,23 @@ export function TaskLogViewer({ projectId }: TaskLogViewerProps) {
                   {getActionName(log.action)}
                 </span>
                 <span className="text-xs text-gray-400 ml-auto">
-                  {new Date(log.createdAt).toLocaleString('zh-CN', {
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                  })}
+                  {(() => {
+                    try {
+                      const date = new Date(log.createdAt);
+                      if (isNaN(date.getTime())) {
+                        return '时间未知';
+                      }
+                      return date.toLocaleString('zh-CN', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                      });
+                    } catch {
+                      return '时间未知';
+                    }
+                  })()}
                 </span>
               </div>
               {log.content && (

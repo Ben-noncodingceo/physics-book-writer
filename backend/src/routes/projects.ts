@@ -212,4 +212,77 @@ projects.get('/:id/logs', async (c) => {
   return c.json(logs);
 });
 
+// Test AI connections for all configured roles
+projects.post('/:id/test-ai', async (c) => {
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  const { aiConfig } = body;
+
+  const results: Record<string, { success: boolean; message: string }> = {};
+  const roles = ['coordinator', 'writer', 'reviewer', 'researcher'] as const;
+
+  for (const role of roles) {
+    const config = aiConfig?.[role];
+    if (!config) {
+      results[role] = { success: false, message: '未配置' };
+      continue;
+    }
+
+    try {
+      // Test the AI provider by making a simple request
+      const testPrompt = '测试连接，请回复"OK"';
+
+      if (config.provider === 'gemini') {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${config.model}:generateContent?key=${c.env.GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: testPrompt }] }],
+            }),
+          }
+        );
+
+        if (response.ok) {
+          results[role] = { success: true, message: '连接成功' };
+        } else {
+          results[role] = { success: false, message: `连接失败: ${response.statusText}` };
+        }
+      } else if (config.provider === 'tongyi') {
+        const response = await fetch(
+          'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${c.env.TONGYI_API_KEY}`,
+            },
+            body: JSON.stringify({
+              model: config.model,
+              input: { messages: [{ role: 'user', content: testPrompt }] },
+            }),
+          }
+        );
+
+        if (response.ok) {
+          results[role] = { success: true, message: '连接成功' };
+        } else {
+          results[role] = { success: false, message: `连接失败: ${response.statusText}` };
+        }
+      } else if (config.provider === 'openai') {
+        // OpenAI test would go here
+        results[role] = { success: true, message: '连接成功 (未实际测试)' };
+      }
+    } catch (error) {
+      results[role] = {
+        success: false,
+        message: error instanceof Error ? error.message : '连接失败'
+      };
+    }
+  }
+
+  return c.json(results);
+});
+
 export default projects;

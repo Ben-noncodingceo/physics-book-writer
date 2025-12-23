@@ -180,6 +180,32 @@ export class AIService {
       subsection: '小节',
     }[outline.level];
 
+    // Define difficulty-specific requirements
+    const difficultyRequirements = {
+      'high-school': `
+**难度要求（高中）：**
+- 使用高中物理和数学知识
+- 数学工具：代数、三角函数、基础几何
+- 避免使用微积分和高等数学
+- 例题难度：适合高中生理解`,
+      'undergraduate': `
+**难度要求（大学本科）：**
+- 使用大学物理和数学知识
+- 必须包含微积分内容：导数、积分、微分方程
+- 必须包含线性代数内容：矢量、矩阵运算
+- 数学推导要严谨，使用高等数学符号
+- 例题难度：需要微积分和线性代数知识才能解答
+- 例题必须体现大学物理的数学深度`,
+      'graduate': `
+**难度要求（研究生）：**
+- 使用研究生物理和高等数学知识
+- 包含高级数学工具：偏微分方程、变分法、张量分析
+- 深入的数学推导和理论分析
+- 例题难度：研究生水平，需要高深的数学功底`,
+    };
+
+    const difficultyReq = difficultyRequirements[context.difficulty] || difficultyRequirements['undergraduate'];
+
     return `你是一位专业的物理学教材编写专家。请根据以下要求生成${levelName}的内容：
 
 **大纲信息：**
@@ -188,11 +214,12 @@ export class AIService {
 - 父级章节：${parent ? parent.title : '无（顶级章节）'}
 - 位置：第 ${position} 个${levelName}
 
+${difficultyReq}
+
 **内容要求：**
-1. 难度级别：${context.difficulty === 'undergraduate' ? '本科' : '研究生'}
-2. 写作风格：${context.writingStyle}
-3. 内容长度：${outline.level === 'chapter' ? '1500-2000' : outline.level === 'section' ? '800-1200' : '400-600'}字
-4. 语言：中文
+1. 写作风格：${context.writingStyle}
+2. 内容长度：${outline.level === 'chapter' ? '1500-2000' : outline.level === 'section' ? '800-1200' : '400-600'}字
+3. 语言：中文
 
 **格式要求：**
 1. 使用标准 LaTeX 格式
@@ -206,12 +233,14 @@ export class AIService {
 **内容结构：**
 1. 引言/概述
 2. 核心概念解释
-3. 数学推导（如适用）
-4. 例题（2-3个）
+3. 数学推导（使用符合难度级别的数学工具）
+4. 例题（2-3个，必须符合难度要求）
 5. 小结
 
-**参考资料：**
-可以参考 Wikipedia 相关词条获取准确的物理知识。
+**重要提示：**
+- 请严格按照难度要求生成内容
+- 本科难度必须使用微积分和线性代数
+- 例题必须体现相应难度的数学深度
 
 请直接输出 LaTeX 格式的内容，不要包含额外的说明。`;
   }

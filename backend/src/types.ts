@@ -25,11 +25,24 @@ export interface Project {
   updated_at: string;
 }
 
+export interface AIRoleConfig {
+  provider: 'gemini' | 'tongyi' | 'openai';
+  model: string;
+}
+
 export interface ProjectConfig {
   difficulty: 'high-school' | 'undergraduate' | 'graduate';
   writingStyle: string;
   customCommands: string[];
   language: 'en' | 'zh';
+  // Per-role AI configuration
+  aiConfig?: {
+    coordinator?: AIRoleConfig;
+    writer?: AIRoleConfig;
+    reviewer?: AIRoleConfig;
+    researcher?: AIRoleConfig;
+  };
+  // Legacy fields (kept for backward compatibility)
   aiProvider?: 'gemini' | 'tongyi' | 'openai';
   aiModel?: string;
 }
