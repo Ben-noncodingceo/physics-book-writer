@@ -171,7 +171,7 @@ function App() {
                 <select
                   value={currentProject.config?.difficulty || 'undergraduate'}
                   onChange={(e) => updateProject({
-                    config: { ...currentProject.config, difficulty: e.target.value }
+                    config: { ...currentProject.config, difficulty: e.target.value as 'high-school' | 'undergraduate' | 'graduate' }
                   })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -205,7 +205,7 @@ function App() {
                 <select
                   value={currentProject.config?.language || 'zh'}
                   onChange={(e) => updateProject({
-                    config: { ...currentProject.config, language: e.target.value }
+                    config: { ...currentProject.config, language: e.target.value as 'en' | 'zh' }
                   })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
