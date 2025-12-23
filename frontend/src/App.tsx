@@ -16,18 +16,19 @@ function App() {
   const { notifications, removeNotification } = useUIStore();
 
   useEffect(() => {
-    // Initialize socket connection (optional, won't block)
-    try {
-      socketService.connect();
-    } catch (err) {
-      console.warn('Socket connection failed:', err);
-    }
+    // Socket connection disabled for now - backend doesn't support WebSocket yet
+    // TODO: Implement WebSocket support in backend
+    // try {
+    //   socketService.connect();
+    // } catch (err) {
+    //   console.warn('Socket connection failed:', err);
+    // }
 
     // Load or create a default project for demo
     loadOrCreateProject();
 
     return () => {
-      socketService.disconnect();
+      // socketService.disconnect();
     };
   }, []);
 
@@ -53,7 +54,14 @@ function App() {
       }
     } catch (error: any) {
       console.error('Failed to load project:', error);
-      setError(error?.message || '无法连接到服务器。请检查后端服务是否正常运行。');
+      const errorMsg = error?.response?.data?.error
+        || error?.response?.statusText
+        || error?.message
+        || '无法连接到服务器。请检查后端服务是否正常运行。';
+      const errorDetail = error?.response?.status
+        ? ` (HTTP ${error.response.status})`
+        : '';
+      setError(errorMsg + errorDetail);
     } finally {
       setLoading(false);
     }
