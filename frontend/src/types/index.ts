@@ -30,7 +30,7 @@ export interface Project {
 }
 
 export interface ProjectConfig {
-  difficulty: 'undergraduate' | 'graduate';
+  difficulty: 'high-school' | 'undergraduate' | 'graduate';
   writingStyle: string;
   customCommands: string[];
   language: 'en' | 'zh';
