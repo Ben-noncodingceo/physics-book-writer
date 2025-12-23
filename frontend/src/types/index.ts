@@ -62,7 +62,7 @@ export interface TaskLog {
   role: AIRole;
   action: string;
   content: string;
-  metadata: Record<string, any>;
+  metadata: string;
   createdAt: string;
 }
 
