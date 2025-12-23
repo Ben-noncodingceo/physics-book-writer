@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Project, OutlineItem, ChapterContent } from '@/types';
+import { Project, OutlineItem, ChapterContent, TaskLog } from '@/types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -105,6 +105,16 @@ export const generationApi = {
   async exportPdf(projectId: string): Promise<Blob> {
     const response = await api.get(`/projects/${projectId}/export/pdf`, {
       responseType: 'blob',
+    });
+    return response.data;
+  },
+};
+
+// Task Log APIs
+export const taskLogApi = {
+  async getByProject(projectId: string, limit?: number): Promise<TaskLog[]> {
+    const response = await api.get(`/projects/${projectId}/logs`, {
+      params: { limit },
     });
     return response.data;
   },

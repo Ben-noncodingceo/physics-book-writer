@@ -34,6 +34,8 @@ export interface ProjectConfig {
   writingStyle: string;
   customCommands: string[];
   language: 'en' | 'zh';
+  aiProvider?: 'gemini' | 'tongyi' | 'openai';
+  aiModel?: string;
 }
 
 export interface ChapterContent {

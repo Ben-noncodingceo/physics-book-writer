@@ -20,7 +20,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{project.title}</h1>
             <p className="text-sm text-gray-500 mt-1">
-              AI LaTeX 书籍生成器 v2.0
+              AI LaTeX 书籍生成器 v2.0 <span className="text-blue-600">by 质心教育科技</span>
             </p>
           </div>
 
