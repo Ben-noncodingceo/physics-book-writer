@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { AIRoleConfig } from '@/types';
 import { AI_PROVIDERS, AI_ROLES, AIProvider, AIRole } from '@/constants/aiModels';
-import { projectApi } from '@/services/api';
 
 interface AISettingsProps {
   projectId: string;
