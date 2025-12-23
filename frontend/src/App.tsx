@@ -10,9 +10,10 @@ import { projectApi } from './services/api';
 
 function App() {
   const [showLatexEditor, setShowLatexEditor] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { currentProject, setCurrentProject } = useProjectStore();
+  const { currentProject, setCurrentProject, updateProject } = useProjectStore();
   const { notifications, removeNotification } = useUIStore();
 
   useEffect(() => {
@@ -106,6 +107,7 @@ function App() {
       <ProjectHeader
         project={currentProject}
         onOpenLatexEditor={() => setShowLatexEditor(true)}
+        onOpenSettings={() => setShowSettings(true)}
       />
 
       {/* Main Content */}
@@ -131,6 +133,112 @@ function App() {
               projectId={currentProject.id}
               onClose={() => setShowLatexEditor(false)}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">项目设置</h2>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  项目标题
+                </label>
+                <input
+                  type="text"
+                  value={currentProject.title}
+                  onChange={(e) => updateProject({ title: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  难度级别
+                </label>
+                <select
+                  value={currentProject.config?.difficulty || 'undergraduate'}
+                  onChange={(e) => updateProject({
+                    config: { ...currentProject.config, difficulty: e.target.value }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="high-school">高中</option>
+                  <option value="undergraduate">本科</option>
+                  <option value="graduate">研究生</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  写作风格
+                </label>
+                <select
+                  value={currentProject.config?.writingStyle || 'academic'}
+                  onChange={(e) => updateProject({
+                    config: { ...currentProject.config, writingStyle: e.target.value }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="academic">学术</option>
+                  <option value="casual">通俗</option>
+                  <option value="detailed">详细</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  语言
+                </label>
+                <select
+                  value={currentProject.config?.language || 'zh'}
+                  onChange={(e) => updateProject({
+                    config: { ...currentProject.config, language: e.target.value }
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="zh">中文</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setShowSettings(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                关闭
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    await projectApi.update(currentProject.id, {
+                      title: currentProject.title,
+                      config: currentProject.config
+                    });
+                    setShowSettings(false);
+                  } catch (error) {
+                    console.error('Failed to save settings:', error);
+                  }
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                保存
+              </button>
+            </div>
           </div>
         </div>
       )}

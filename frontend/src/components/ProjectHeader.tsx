@@ -5,11 +5,13 @@ import { Cog6ToothIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 interface ProjectHeaderProps {
   project: Project;
   onOpenLatexEditor: () => void;
+  onOpenSettings?: () => void;
 }
 
 export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   project,
   onOpenLatexEditor,
+  onOpenSettings,
 }) => {
   return (
     <header className="bg-white shadow-sm border-b">
@@ -31,7 +33,10 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               LaTeX 头文件
             </button>
 
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+            <button
+              onClick={onOpenSettings}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            >
               <Cog6ToothIcon className="w-5 h-5" />
               设置
             </button>

@@ -107,6 +107,8 @@ export const OutlineEditor: React.FC<OutlineEditorProps> = ({ projectId }) => {
   const handleTitleChange = async (itemId: string, newTitle: string) => {
     try {
       await outlineApi.update(projectId, itemId, { title: newTitle });
+      // Reload outline to reflect changes
+      await loadOutline();
     } catch (error) {
       console.error('Failed to update title:', error);
     }
